@@ -13,7 +13,7 @@ WORKDIR /COMPACT_STR
 RUN rm -rf build
 RUN mkdir build/
 RUN cd build/ && rm -rf *
-RUN cd build/ && cargo new compact_str-fuzz ..
+RUN cd build/ && cargo new compact_str-fuzz
 #Make fuzz targets
 RUN cd build/ && cargo run --bin compact_str
 
