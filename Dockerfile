@@ -23,4 +23,4 @@ FROM ubuntu:20.04
 COPY --from=builder /COMPACT_STR/target/release/compact_str /
 #COPY fuzz targets
 
-#CMD ['/compact-str-fuzz']
+#CMD ['target/release/compact_str']
