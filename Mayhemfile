@@ -2,7 +2,7 @@
 project: samsaq/compact-str/compact-str
 
 # Target name (should be unique within the project)
-target: compact-str
+target: compact_str
 
 # Base image to run the binary in.
 # image: ghcr.io/samsaq/fuzzme:latest
@@ -12,4 +12,4 @@ cmds:
 
   # Command used to start the target, "@@" is the input file
   # (when "@@" is omitted Mayhem defaults to stdin inputs)
-  - cmd: target/release/compact_str
+  - cmd: /compact_str @@
