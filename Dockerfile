@@ -15,7 +15,7 @@ RUN mkdir build/
 RUN cd build/ && rm -rf *
 RUN cd build/ && cargo new compact_str-fuzz
 #Make fuzz targets
-RUN cd build/ && cargo run --bin compact_str --features="libfuzzer-sys"
+RUN cd build/ && cargo build --bin compact_str --features="libfuzzer-sys"
 # Package Stage
 FROM ubuntu:20.04
 
