@@ -3,18 +3,25 @@ FROM ubuntu:20.04 as builder
 
 ## Install build dependencies.
 RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y cmake clang curl
-RUN curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-RUN ${HOME}/.cargo/bin/rustup default nightly
-RUN ${HOME}/.cargo/bin/cargo install -f cargo-fuzz
+    DEBIAN_FRONTEND=noninteractive apt-get install -y rustc cargo
 
 ## Add source code to the build stage.
-ADD . /compact_str
-WORKDIR /compact_str
+ADD . /COMPACT_STR
+WORKDIR /COMPACT_STR
 
-RUN ${HOME}/.cargo/bin/cargo fuzz build --features=libfuzzer-sys --debug-assertions compact_str
+## TODO: ADD YOUR BUILD INSTRUCTIONS HERE.
+RUN rm -rf build
+RUN mkdir build/
+RUN cd build/ && rm -rf *
+RUN cd build/ && cargo new compact_str-fuzz ..
+#Make fuzz targets
+RUN cd build/ && cargo run --bin compact_str
 
 # Package Stage
 FROM ubuntu:20.04
 
-COPY --from=builder compact_str/target/x86_64-unknown-linux-gnu/release/* /
+## TODO: Change <Path in Builder Stage>
+COPY --from=builder /COMPACT_STR/build/target/debug/compact_str-fuzz /
+#COPY fuzz targets
+
+#CMD ['/compact-str-fuzz']
