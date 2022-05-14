@@ -3,7 +3,7 @@ FROM ubuntu:20.04 as builder
 
 ## Install build dependencies.
 RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y rustc cargo
+    DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential rustc cargo cmake clang 
 
 ## Add source code to the build stage.
 ADD . /COMPACT_STR
