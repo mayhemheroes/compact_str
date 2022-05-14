@@ -1,10 +1,14 @@
+use std::num;
 use std::str::FromStr;
 
 use proptest::prelude::*;
 use proptest::strategy::Strategy;
 use test_strategy::proptest;
 
-use crate::CompactStr;
+use crate::{
+    CompactStr,
+    ToCompactStr,
+};
 
 #[cfg(target_pointer_width = "64")]
 const MAX_SIZE: usize = 24;
@@ -107,14 +111,6 @@ fn test_from_lossy_cow_roundtrips(#[strategy(rand_bytes())] bytes: Vec<u8>) {
     let cow = String::from_utf8_lossy(&bytes[..]);
     let compact = CompactStr::from(cow.clone());
     prop_assert_eq!(cow, compact);
-}
-
-#[proptest]
-#[cfg_attr(miri, ignore)]
-fn test_from_lossy_cow_allocated_properly(#[strategy(rand_bytes())] bytes: Vec<u8>) {
-    let cow = String::from_utf8_lossy(&bytes[..]);
-    let compact = CompactStr::from(cow);
-    assert_allocated_properly(&compact);
 }
 
 #[proptest]
@@ -364,4 +360,333 @@ fn test_plus_operator() {
     assert_eq!(CompactStr::from("a") + &String::from("b"), "ab");
     assert_eq!(CompactStr::from("a") + String::from("b"), "ab");
     assert_eq!(String::from("a") + CompactStr::from("b"), "ab");
+}
+
+#[test]
+fn test_u8_to_compact_str() {
+    let vals = [u8::MIN, 1, 42, u8::MAX - 2, u8::MAX - 1, u8::MAX];
+
+    for x in &vals {
+        let c = x.to_compact_str();
+        let s = x.to_string();
+
+        assert_eq!(c, s);
+        assert!(!c.is_heap_allocated());
+    }
+}
+
+#[test]
+fn test_i8_to_compact_str() {
+    let vals = [
+        i8::MIN,
+        i8::MIN + 1,
+        i8::MIN + 2,
+        -1,
+        0,
+        1,
+        42,
+        i8::MAX - 2,
+        i8::MAX - 1,
+        i8::MAX,
+    ];
+
+    for x in &vals {
+        let c = x.to_compact_str();
+        let s = x.to_string();
+
+        assert_eq!(c, s);
+        assert!(!c.is_heap_allocated());
+    }
+}
+
+#[test]
+fn test_u16_to_compact_str() {
+    let vals = [u16::MIN, 1, 42, 999, u16::MAX - 2, u16::MAX - 1, u16::MAX];
+
+    for x in &vals {
+        let c = x.to_compact_str();
+        let s = x.to_string();
+
+        assert_eq!(c, s);
+        assert!(!c.is_heap_allocated());
+    }
+}
+
+#[test]
+fn test_i16_to_compact_str() {
+    let vals = [
+        i16::MIN,
+        i16::MIN + 1,
+        i16::MIN + 2,
+        -42,
+        -1,
+        0,
+        1,
+        42,
+        999,
+        i16::MAX - 2,
+        i16::MAX - 1,
+        i16::MAX,
+    ];
+
+    for x in &vals {
+        let c = x.to_compact_str();
+        let s = x.to_string();
+
+        assert_eq!(c, s);
+        assert!(!c.is_heap_allocated());
+    }
+}
+
+#[test]
+fn test_u32_to_compact_str() {
+    let vals = [
+        u32::MIN,
+        1,
+        42,
+        999,
+        123456789,
+        u32::MAX - 2,
+        u32::MAX - 1,
+        u32::MAX,
+    ];
+
+    for x in &vals {
+        let c = x.to_compact_str();
+        let s = x.to_string();
+
+        assert_eq!(c, s);
+        assert!(!c.is_heap_allocated());
+    }
+}
+
+#[test]
+fn test_i32_to_compact_str() {
+    let vals = [
+        i32::MIN,
+        i32::MIN + 2,
+        i32::MIN + 1,
+        -12345678,
+        -42,
+        -1,
+        0,
+        1,
+        999,
+        123456789,
+        i32::MAX - 2,
+        i32::MAX - 1,
+        i32::MAX,
+    ];
+
+    for x in &vals {
+        let c = x.to_compact_str();
+        let s = x.to_string();
+
+        assert_eq!(c, s);
+        assert!(!c.is_heap_allocated());
+    }
+}
+
+#[test]
+fn test_u64_to_compact_str() {
+    let vals = [
+        u64::MIN,
+        1,
+        999,
+        123456789,
+        98765432123456,
+        u64::MAX - 2,
+        u64::MAX - 1,
+        u64::MAX,
+    ];
+
+    for x in &vals {
+        let c = x.to_compact_str();
+        let s = x.to_string();
+
+        assert_eq!(c, s);
+
+        // u64 can be up-to 20 characters long, which can't be inlined on 32-bit arches
+        #[cfg(target_pointer_width = "64")]
+        assert!(!c.is_heap_allocated());
+    }
+}
+
+#[test]
+fn test_i64_to_compact_str() {
+    let vals = [
+        i64::MIN,
+        i64::MIN + 1,
+        i64::MIN + 2,
+        -22222222,
+        -42,
+        0,
+        1,
+        999,
+        123456789,
+        i64::MAX - 2,
+        i64::MAX - 1,
+        i64::MAX,
+    ];
+
+    for x in &vals {
+        let c = x.to_compact_str();
+        let s = x.to_string();
+
+        assert_eq!(c, s);
+
+        // i64 can be up-to 20 characters long, which can't be inlined on 32-bit arches
+        #[cfg(target_pointer_width = "64")]
+        assert!(!c.is_heap_allocated());
+    }
+}
+
+#[test]
+fn test_u128_to_compact_str() {
+    let vals = [
+        u128::MIN,
+        1,
+        999,
+        123456789,
+        u128::MAX - 2,
+        u128::MAX - 1,
+        u128::MAX,
+    ];
+
+    for x in &vals {
+        let c = x.to_compact_str();
+        let s = x.to_string();
+
+        assert_eq!(c, s);
+    }
+}
+
+#[test]
+fn test_i128_to_compact_str() {
+    let vals = [
+        i128::MIN,
+        i128::MIN + 1,
+        i128::MIN + 2,
+        -22222222,
+        -42,
+        0,
+        1,
+        999,
+        123456789,
+        i128::MAX - 2,
+        i128::MAX - 1,
+        i128::MAX,
+    ];
+
+    for x in &vals {
+        let c = x.to_compact_str();
+        let s = x.to_string();
+
+        assert_eq!(c, s);
+    }
+}
+
+#[test]
+fn test_bool_to_compact_str() {
+    let c = true.to_compact_str();
+    let s = true.to_string();
+
+    assert_eq!("true", c);
+    assert_eq!(c, s);
+    assert!(!c.is_heap_allocated());
+
+    let c = false.to_compact_str();
+    let s = false.to_string();
+
+    assert_eq!("false", c);
+    assert_eq!(c, s);
+    assert!(!c.is_heap_allocated());
+}
+
+macro_rules! format_compact {
+    ( $fmt:expr $(, $args:tt)* ) => {
+        ToCompactStr::to_compact_str(
+            &core::format_args!(
+                $fmt,
+                $(
+                    $args,
+                )*
+            )
+        )
+    };
+}
+
+macro_rules! assert_int_MAX_to_compact_str {
+    ($int: ty) => {
+        assert_eq!(&*<$int>::MAX.to_string(), &*<$int>::MAX.to_compact_str());
+    };
+}
+
+#[test]
+fn test_to_compact_str() {
+    // Test specialisation for bool, char and String
+    assert_eq!(&*true.to_string(), "true".to_compact_str());
+    assert_eq!(&*false.to_string(), "false".to_compact_str());
+
+    assert_eq!("1", '1'.to_compact_str());
+    assert_eq!("2333", "2333".to_string().to_compact_str());
+    assert_eq!("2333", "2333".to_compact_str().to_compact_str());
+
+    // Test specialisation for int and nonzero_int using itoa
+    assert_eq!("234", 234.to_compact_str());
+    assert_eq!("234", num::NonZeroU64::new(234).unwrap().to_compact_str());
+
+    assert_int_MAX_to_compact_str!(u8);
+    assert_int_MAX_to_compact_str!(i8);
+
+    assert_int_MAX_to_compact_str!(u16);
+    assert_int_MAX_to_compact_str!(i16);
+
+    assert_int_MAX_to_compact_str!(u32);
+    assert_int_MAX_to_compact_str!(i32);
+
+    assert_int_MAX_to_compact_str!(u64);
+    assert_int_MAX_to_compact_str!(i64);
+
+    assert_int_MAX_to_compact_str!(usize);
+    assert_int_MAX_to_compact_str!(isize);
+
+    // Test specialisation for f32 and f64 using ryu
+    // TODO: Fix bug in powerpc64, which is a little endian system
+    #[cfg(not(all(target_arch = "powerpc64", target_pointer_width = "64")))]
+    {
+        assert_eq!(
+            (&*3.2_f32.to_string(), &*288888.290028_f64.to_string()),
+            (
+                &*3.2_f32.to_compact_str(),
+                &*288888.290028_f64.to_compact_str()
+            )
+        );
+
+        assert_eq!("inf", f32::INFINITY.to_compact_str());
+        assert_eq!("-inf", f32::NEG_INFINITY.to_compact_str());
+
+        assert_eq!("inf", f64::INFINITY.to_compact_str());
+        assert_eq!("-inf", f64::NEG_INFINITY.to_compact_str());
+
+        assert_eq!("NaN", f32::NAN.to_compact_str());
+        assert_eq!("NaN", f64::NAN.to_compact_str());
+    }
+
+    // Test generic Display implementation
+    assert_eq!("234", "234".to_compact_str());
+    assert_eq!("12345", format_compact!("{}", "12345"));
+    assert_eq!("112345", format_compact!("1{}", "12345"));
+    assert_eq!("1123452", format_compact!("1{}{}", "12345", 2));
+    assert_eq!("11234522", format_compact!("1{}{}{}", "12345", 2, '2'));
+    assert_eq!(
+        "112345221000",
+        format_compact!("1{}{}{}{}", "12345", 2, '2', 1000)
+    );
+
+    // Test string longer than repr::MAX_SIZE
+    assert_eq!(
+        "01234567890123456789999999",
+        format_compact!("0{}67890123456789{}", "12345", 999999)
+    );
 }

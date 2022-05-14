@@ -23,6 +23,17 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-${{ hashFiles('**/Cargo.toml') }}-stable-check
+          restore-keys: |
+            ${{ runner.os }}-${{ hashFiles('**/Cargo.toml') }}-stable
       - uses: actions-rs/cargo@v1
         with:
           command: check
@@ -38,25 +49,50 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - uses: actions-rs/cargo@v1
+      - uses: actions/cache@v3
         with:
-          command: test
-          args: --release --all-features --manifest-path=compact_str/Cargo.toml -- --include-ignored
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-${{ hashFiles('**/Cargo.toml') }}-stable-test
+          restore-keys: |
+            ${{ runner.os }}-${{ hashFiles('**/Cargo.toml') }}-stable
+      - name: Install cargo-nextest
+        uses: taiki-e/install-action@nextest
+      - name: cargo test
+        run: |
+          cargo nextest run --release --all-features --manifest-path=compact_str/Cargo.toml --run-ignored=all
 
   test-nightly:
     name: cargo test nightly
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-${{ hashFiles('**/Cargo.toml') }}-nightly-test
+          restore-keys: |
+            ${{ runner.os }}-${{ hashFiles('**/Cargo.toml') }}-nightly
+      - name: Install cargo-nextest
+        uses: taiki-e/install-action@nextest
+      # Install nightly after cargo-nextest is installed, as cargo-nextest failed to compile on nightly
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
           toolchain: nightly
           override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --release --all-features --manifest-path=compact_str/Cargo.toml -- --include-ignored
+      - name: cargo test
+        run: |
+          cargo nextest run --release --all-features --manifest-path=compact_str/Cargo.toml --run-ignored=all
 
   miri:
     name: cargo miri test
@@ -69,6 +105,18 @@ jobs:
           toolchain: nightly
           override: true
           components: miri
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-${{ hashFiles('**/Cargo.toml') }}-nightly-test-miri
+          restore-keys: |
+            ${{ runner.os }}-${{ hashFiles('**/Cargo.toml') }}-nightly-test
+            ${{ runner.os }}-${{ hashFiles('**/Cargo.toml') }}-nightly
       - name: Run Miri
         run: |
           cargo miri test --all-features --manifest-path=compact_str/Cargo.toml
@@ -83,6 +131,18 @@ jobs:
           profile: minimal
           toolchain: nightly
           override: true
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-${{ hashFiles('**/Cargo.toml') }}-nightly-example-bytes
+          restore-keys: |
+            ${{ runner.os }}-${{ hashFiles('**/Cargo.toml') }}-nightly-example
+            ${{ runner.os }}-${{ hashFiles('**/Cargo.toml') }}-nightly
       - uses: actions-rs/cargo@v1
         with:
           command: run
@@ -98,6 +158,18 @@ jobs:
           profile: minimal
           toolchain: nightly
           override: true
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-${{ hashFiles('**/Cargo.toml') }}-nightly-example-bytes
+          restore-keys: |
+            ${{ runner.os }}-${{ hashFiles('**/Cargo.toml') }}-nightly-example
+            ${{ runner.os }}-${{ hashFiles('**/Cargo.toml') }}-nightly
       - uses: actions-rs/cargo@v1
         with:
           command: run
