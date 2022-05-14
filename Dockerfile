@@ -15,8 +15,8 @@ RUN mkdir build/
 RUN cd build/ && rm -rf *
 RUN cd build/ && cargo new compact_str-fuzz
 #Make fuzz targets
-RUN cd build/ && cargo run --bin compact_str
-
+RUN cd build/ && cargo run
+#  --bin compact_str (re-add if needed, testing through github without first)
 # Package Stage
 FROM ubuntu:20.04
 

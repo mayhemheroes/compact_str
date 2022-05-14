@@ -2,7 +2,7 @@
 project: samsaq/compact_str/
 
 # Target name (should be unique within the project)
-target: compact-str-fuzz-exec
+target: compact_str-fuzz
 
 # Base image to run the binary in.
 # image: ghcr.io/samsaq/fuzzme:latest
