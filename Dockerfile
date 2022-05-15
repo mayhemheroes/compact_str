@@ -17,4 +17,4 @@ RUN ${HOME}/.cargo/bin/cargo fuzz build --features=libfuzzer-sys --debug-asserti
 # Package Stage
 FROM ubuntu:20.04
 
-COPY --from=builder compact_str/target/x86_64-unknown-linux-gnu/release/compact_str /
+COPY --from=builder compact_str/target/x86_64-unknown-linux-gnu/release/* /
