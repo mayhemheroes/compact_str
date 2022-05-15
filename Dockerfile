@@ -11,10 +11,10 @@ RUN ${HOME}/.cargo/bin/cargo install -f cargo-fuzz
 ## Add source code to the build stage.
 ADD . /compact_str
 WORKDIR /compact_str
-RUN cd compact_str && ${HOME}/.cargo/bin/cargo build
-RUN ${HOME}/.cargo/bin/cargo fuzz build --fuzz-dir ./fuzz
+
+RUN ${HOME}/.cargo/bin/cargo fuzz build --features=libfuzzer-sys --debug-assertions compact_str
 
 # Package Stage
 FROM ubuntu:20.04
 
-COPY --from=builder compact_str/fuzz/target/x86_64-unknown-linux-gnu/release/* /
+COPY --from=builder compact_str/target/x86_64-unknown-linux-gnu/release/compact_str /
