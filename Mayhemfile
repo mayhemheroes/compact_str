@@ -1,4 +1,4 @@
-project: compact_str
+project: compact-str
 target: compact_str
 
 cmds:
