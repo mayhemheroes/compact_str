@@ -12,5 +12,5 @@ cmds:
 
   # Command used to start the target, "@@" is the input file
   # (when "@@" is omitted Mayhem defaults to stdin inputs)
-  - cmd: /compact_str @@
+  - cmd: /compact_str
   libfuzzer: true
