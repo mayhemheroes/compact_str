@@ -7,7 +7,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  COMPACT_STR_MAYHEMFILE: Mayhemfile
+  COMPACT_STR_MAYHEMFILE: compact_str.mayhemfile
 
 jobs:
   build:
