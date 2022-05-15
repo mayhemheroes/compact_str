@@ -1,11 +1,11 @@
 # Namespaced project name that the target belongs to
-project: samsaq/compact-str/compact-str
+project: compact_str
 
 # Target name (should be unique within the project)
 target: compact_str
 
 # Base image to run the binary in.
-# image: ghcr.io/samsaq/fuzzme:latest
+# image: ghcr.io/samsaq/compact_str:latest
 
 # List of commands used to test the target
 cmds:
