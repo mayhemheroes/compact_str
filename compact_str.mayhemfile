@@ -1,0 +1,5 @@
+project: compact_str
+target: compact_str
+
+cmds:
+    - cmd: /compact_str
