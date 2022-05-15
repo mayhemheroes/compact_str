@@ -1,4 +1,4 @@
-project: compact_str
+project: nottirb/compact_str
 target: compact_str
 
 cmds:
