@@ -3,6 +3,7 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+  workflow_call:
 
 env:
   REGISTRY: ghcr.io
@@ -11,7 +12,7 @@ env:
 
 jobs:
   build:
-    name: "${{ matrix.os }} shared=${{ matrix.shared }} ${{ matrix.build_type }}"
+    name: ${{ matrix.os }} shared=${{ matrix.shared }} ${{ matrix.build_type }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -46,11 +47,11 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Start analysis for compact_str
+      - name: Start analysis
         uses: ForAllSecure/mcode-action@v1
         with:
           mayhem-token: ${{ secrets.MAYHEM_TOKEN }}
-          args: --image ${{ steps.meta.outputs.tags }} --file ${{ env.COMPACT_STR_MAYHEMFILE }} --project compact-str
+          args: --image ${{ steps.meta.outputs.tags }} --file ${{ env.COMPACT_STR_MAYHEMFILE }} --project compact-str --duration 300
           sarif-output: sarif
 
       - name: Upload SARIF file(s)
