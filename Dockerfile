@@ -10,11 +10,6 @@ ADD . /COMPACT_STR
 WORKDIR /COMPACT_STR
 
 ## TODO: ADD YOUR BUILD INSTRUCTIONS HERE.
-#RUN rm -rf build
-#RUN mkdir build/
-#RUN cd build/ && rm -rf *
-#RUN cd build/ && cargo new compact_str
-#Make fuzz targets
 RUN cargo build --bin compact_str --features="libfuzzer-sys" --release
 # Package Stage
 FROM ubuntu:20.04
