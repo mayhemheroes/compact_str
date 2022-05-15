@@ -1,5 +1,5 @@
 [workspace]
-members = ["bench", "examples/bytes", "examples/serde", "compact_str", "fuzz"]
+members = ["bench", "examples/bytes", "examples/serde", "compact_str"]
 
 # there's currently a bug with `arbitrary` that causes panics on 32-bit archs when the provided
 # buffer is >65kb. The fix has been patched but not yet released
