@@ -1,0 +1,15 @@
+# Namespaced project name that the target belongs to
+project: compact_str
+# possible compact_str/compact_str
+# Target name (should be unique within the project)
+target: compact_str
+
+# Base image to run the binary in.
+# image: ghcr.io/samsaq/compact_str:latest
+
+# List of commands used to test the target
+cmds:
+  # Command used to start the target, "@@" is the input file
+  # (when "@@" is omitted Mayhem defaults to stdin inputs)
+  - cmd: /compact_str
+  # libfuzzer: true
