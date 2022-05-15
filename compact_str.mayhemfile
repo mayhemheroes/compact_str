@@ -3,4 +3,3 @@ target: compact_str
 
 cmds:
     - cmd: /compact_str
-	libfuzzer: true
